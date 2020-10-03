@@ -1,30 +1,26 @@
 require("dotenv/config");
 const MongoClient = require('mongodb').MongoClient;
 const express = require("express");
+const bodyParser = require("body-parser")
 const cors = require("cors");
 const uri = process.env.MONGO_URL;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true});
 
 const app = express();
 app.use(cors());
-app.use(express.json);
+app.set("port", 2000);
+app.use(bodyParser.json());
 
-async function getAll (){
-    let result = [];
-    try {
-        await client.connect();
-        const collection = client.db("tourism").collection("cases");
-        result = await collection.find({}).toArray();
-    } finally {
-        await client.close();
-    }
-    return result;
-
+async function getAll(){
+    await client.connect();
+    const collection = await client.db("tourism").collection("cases");
+    const result = await collection.find({});
+    return result.toArray();
 }
 
-app.all("/", (req, res) => {
-    res.status(200).send(getAll());
-})
+app.get('/', (async (req, res) => {
+     const json = await getAll();
+     res.json(json);
+}))
 
-app.listen(process.env.PORT || 8080)
-
+app.listen(process.env.PORT || 2000);
