@@ -8,7 +8,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 const app = express();
 app.use(cors());
-app.set("port", 2000);
+app.set("port", process.env.PORT || 8080);
 app.use(bodyParser.json());
 
 async function getAll(){
@@ -23,4 +23,4 @@ app.get('/', (async (req, res) => {
      res.json(json);
 }))
 
-app.listen(process.env.PORT || 2000);
+app.listen(process.env.PORT || 8080);
