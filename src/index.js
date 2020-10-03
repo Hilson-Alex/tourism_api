@@ -23,7 +23,7 @@ async function getAll (){
 }
 
 app.all("/", (req, res) => {
-    res.status(200).json(getAll());
+    res.status(200).send(getAll());
 })
 
 app.listen(process.env.PORT || 8080)
