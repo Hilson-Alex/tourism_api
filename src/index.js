@@ -1,26 +1,23 @@
 require("dotenv/config");
-const MongoClient = require('mongodb').MongoClient;
-const express = require("express");
+const db         = require("./db_middlewares")
+const similarity = require("./similarity/similarity_middlewares");
+const express    = require("express");
 const bodyParser = require("body-parser")
-const cors = require("cors");
-const uri = process.env.MONGO_URL;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true});
+const cors       = require("cors");
 
 const app = express();
 app.use(cors());
 app.set("port", process.env.PORT || 8080);
 app.use(bodyParser.json());
 
-async function getAll(){
-    await client.connect();
-    const collection = await client.db("tourism").collection("cases");
-    const result = await collection.find({});
-    return result.toArray();
+async function send (req, res) {
+    res.json(req.array).status(200);
 }
 
-app.get('/', (async (req, res) => {
-     const json = await getAll();
-     res.json(json);
-}))
+app.all('/', db.getAll, send);
+
+app.post("/similarity", db.getAll, similarity.getSimilarity, similarity.sortResults);
+
+app.post("/insert", db.insert);
 
 app.listen(process.env.PORT || 8080);
