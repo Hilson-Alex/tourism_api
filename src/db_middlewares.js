@@ -18,7 +18,6 @@ async function getAll(req, res, next){
     await CLIENT.connect();
     const collection = CLIENT.db(DB_NAME).collection(COLLECTION);
     req.array = await collection.find({}).toArray();
-    await CLIENT.close();
     next();
 }
 
