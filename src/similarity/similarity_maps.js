@@ -207,4 +207,5 @@ const costSimilarity = {
 }
 
 Object.freeze([placeTypeSimilarity, seasonSimilarity, groupSimilarity, costSimilarity]);
-module.exports({placeTypeSimilarity, seasonSimilarity, groupSimilarity, costSimilarity})
+
+module.exports = {placeTypeSimilarity, seasonSimilarity, groupSimilarity, costSimilarity};
