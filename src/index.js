@@ -16,13 +16,27 @@ async function send (req, res) {
     res.json(req.array).status(200);
 }
 
+function allow (req, res, next){
+    res.setHeader('Access-Control-Allow-Origin', '*'); // or something like http://localhost:3000'
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    // To expose all headers in all responses
+    res.setHeader('Access-Control-Expose-Headers', '*');
+    next();
+}
+
 // get all cases
-app.all('/', db.getAll, send);
+app.all('/', allow, db.getAll, send);
 
 // get solutions by priority
-app.post("/similarity", db.getAll, similarity.getSimilarity, similarity.sortResults, send);
+app.post("/similarity", allow, db.getAll, similarity.getSimilarity, similarity.sortResults, send);
 
 // insert a case
-app.post("/insert", db.insert);
+app.post("/insert", allow, db.insert);
 
 app.listen(process.env.PORT || 8080);

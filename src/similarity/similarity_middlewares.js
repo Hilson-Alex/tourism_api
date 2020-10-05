@@ -51,7 +51,7 @@ function sum (a, b) {
 async function getSimilarity (req, res, next){
     const array = req.array;
     const userCase = req.body.case;
-    weight.cost = userCase.custo;
+    weight.cost = parseFloat(userCase.custo);
     const similarities = {};
     let similarity = [];
     let custo, solucao;
