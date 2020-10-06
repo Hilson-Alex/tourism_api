@@ -32,7 +32,9 @@ app.all('/', db.getAll, send);
 app.post("/similarity", db.getAll, similarity.getSimilarity, similarity.sortResults, send);
 
 // insert a case
-app.options("/insert", cors());
+app.options("/insert", cors);
 app.post("/insert", db.insert);
+
+app.all("/count", db.countCases);
 
 app.listen(process.env.PORT || 8080);
