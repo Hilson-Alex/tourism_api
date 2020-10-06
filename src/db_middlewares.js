@@ -4,7 +4,7 @@ const MongoClient = require('mongodb').MongoClient;
 const URI = process.env.MONGO_URL;
 const CLIENT = new MongoClient(URI, { useNewUrlParser: true, useUnifiedTopology: true});
 const DB_NAME = "tourism";
-const COLLECTION = "cases"
+const COLLECTION = "cases";
 
 /**
  * Middleware to get all cases
@@ -31,7 +31,20 @@ async function insert (req, res){
     await CLIENT.connect();
     const collection = CLIENT.db(DB_NAME).collection(COLLECTION);
     await collection.insertOne(req.body.case);
-    res.status(200);
+    res.status(200).send();
 }
 
-module.exports = {getAll, insert};
+/**
+ * Middleware to count database docs
+ * @param req req HTTP request
+ * @param res req HTTP request
+ * @returns {Promise<void>} response {quantity: quantity of docs}
+ */
+async function countCases (req, res){
+    await CLIENT.connect();
+    const collection = CLIENT.db(DB_NAME).collection(COLLECTION);
+    const count = collection.countDocuments({});
+    res.json({quantity: await count}).status(200);
+}
+
+module.exports = {getAll, insert, countCases};
