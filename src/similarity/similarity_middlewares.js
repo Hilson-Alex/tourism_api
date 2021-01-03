@@ -79,6 +79,7 @@ async function getSimilarity (req, res, next){
  * Sort the cases by its similarity
  * @param req HTTP request
  * @param res HTTP response
+ * @param next next middleware
  * @returns no return, the result is on request
  */
 function sortResults (req, res, next) {
@@ -87,7 +88,12 @@ function sortResults (req, res, next) {
     Object.keys(array).sort((a, b) => b - a).forEach((key) => {
         ordered.push(array[key]);
     })
-    req.array = ordered;
+    req.array = ordered.filter((item, pos, self) => {
+        const solution = JSON.stringify(item);
+        return self.findIndex((obj) => {
+            return JSON.stringify(obj) === solution;
+        }) === pos;
+    });
     next();
 }
 
