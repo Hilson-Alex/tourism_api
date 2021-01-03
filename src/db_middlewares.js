@@ -1,10 +1,7 @@
 require("dotenv/config");
-const MongoClient = require('mongodb').MongoClient;
+const Case = require('./data/Case');
 
 const URI = process.env.MONGO_URL;
-const CLIENT = new MongoClient(URI, { useNewUrlParser: true, useUnifiedTopology: true});
-const DB_NAME = "tourism";
-const COLLECTION = "cases";
 
 /**
  * Middleware to get all cases
@@ -15,9 +12,7 @@ const COLLECTION = "cases";
  *                          request, and send for the next middleware
  */
 async function getAll(req, res, next){
-    await CLIENT.connect();
-    const collection = CLIENT.db(DB_NAME).collection(COLLECTION);
-    req.array = await collection.find({}).toArray();
+    req.array = await Case.find({}).exec();
     next();
 }
 
@@ -28,10 +23,12 @@ async function getAll(req, res, next){
  * @returns {Promise<void>} response 200
  */
 async function insert (req, res){
-    await CLIENT.connect();
-    const collection = CLIENT.db(DB_NAME).collection(COLLECTION);
-    await collection.insertOne(req.body.case);
-    res.status(200).send();
+    new Case(req.body.case).save( (err, doc) => {
+        if (err) {
+            return res.status(501).json({error: err});
+        }
+        return res.status(200).json({ case: doc });
+    });
 }
 
 /**
@@ -41,10 +38,16 @@ async function insert (req, res){
  * @returns {Promise<void>} response {quantity: quantity of docs}
  */
 async function countCases (req, res){
-    await CLIENT.connect();
-    const collection = CLIENT.db(DB_NAME).collection(COLLECTION);
-    const count = collection.countDocuments({});
-    res.json({quantity: await count}).status(200);
+    let query = req.query;
+    if (Object.keys(query).length === 0 && query.constructor === Object){
+        query = req.body;
+    }
+    Case.count(query, (err, count) => {
+        if (err) {
+            return res.status(501).json({error: err});
+        }
+        return res.status(200).json({ quantity: count });
+    });
 }
 
 module.exports = {getAll, insert, countCases};
