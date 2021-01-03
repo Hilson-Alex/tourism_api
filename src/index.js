@@ -1,15 +1,26 @@
 require("dotenv/config");
 const db         = require("./db_middlewares")
+const mongoose   = require('mongoose');
 const similarity = require("./similarity/similarity_middlewares");
 const express    = require("express");
 const bodyParser = require("body-parser")
 const cors       = require("cors");
+
+//setting up db connection
+mongoose.connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+}).then(() => console.log('DB connected'))
+    .catch(err => console.error(err));
 
 // setting up express
 const app = express();
 app.use(cors());
 app.set("port", process.env.PORT || 8080);
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", '*');
